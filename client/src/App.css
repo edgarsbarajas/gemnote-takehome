@@ -1,0 +1,59 @@
+header {
+  width: 100%;
+  background-color: #000;
+}
+
+header > .logo {
+  height: 90px;
+}
+
+header > nav {
+  padding: 10px;
+}
+
+header > nav > ul {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  display: flex;   /* I decided to go with flex as it'll allow for more nav options with minimal CSS updates*/
+  flex-direction: row;
+  justify-content: center;
+}
+
+header > nav > ul > li {
+  display: inline-block;
+}
+
+header > nav > ul > li > a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.spinner {
+  width: 100%;
+  max-width: 200px;
+  display: block;
+  margin: 0 auto;
+}
+
+@media(min-width: 768px) {
+  .App {
+    display: flex;
+  }
+
+  header {
+    width: 15%;
+    min-height: 100vh;
+    max-width: 165px;
+  }
+
+  .content {
+    width: 85%;
+  }
+
+  header > .logo {
+    display: block;
+    margin: 0 auto;
+  }
+}
