@@ -39,7 +39,7 @@ class ProductList extends Component {
     this.setState({loading: true});
 
     // fetch all products from server
-    axios.get("/products")
+    axios.get("/api/v1/products")
       .then(({data}) => {
         // once we have the data, add a quantity and selected property
         // this will allow admins to select and submit products
