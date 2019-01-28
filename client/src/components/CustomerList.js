@@ -18,7 +18,7 @@ class CustomerList extends Component {
     this.setState({loading: true});
 
     // fetch all products from server
-    axios.get("/api/v1/customers")
+    axios.get("/customers")
       .then(({data}) => {
         this.setState({customers: data, loading: false});
       })

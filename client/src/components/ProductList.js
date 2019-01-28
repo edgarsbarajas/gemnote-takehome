@@ -13,14 +13,15 @@ class ProductList extends Component {
       products: [],
       customer: "",
       shippingCost: 14.99, // fixed shipping amount - stored in state to display/submit invoice easier
-      totalCost: 0.00,
+      subtotal: 0.00,
+      total: 0.00,
       loading: false,
       submittedSuccessfully: false
     }
   }
 
-  updateTotalCost() {
-    let totalCost = 0.00;
+  updateSubtotal() {
+    let subtotal = 0.00;
 
     if(this.state.products.length > 0) {
       const prices = this.state.products.map((product) => {
@@ -28,17 +29,22 @@ class ProductList extends Component {
       })
 
       // sum of all prices
-      totalCost = prices.reduce((a, b) => a + b);
+      subtotal = prices.reduce((a, b) => a + b);
     }
 
-    this.setState({totalCost});
+    this.setState((prevState) => {
+      return {
+        subtotal: subtotal.toFixed(2),
+        total: (subtotal + prevState.shippingCost).toFixed(2)
+      }
+    });
   }
 
   componentDidMount() {
     this.setState({loading: true});
 
     // fetch all products from server
-    axios.get("/api/v1/products")
+    axios.get("/products")
       .then(({data}) => {
         // once we have the data, add a quantity and selected property
         // this will allow admins to select and submit products
@@ -85,7 +91,7 @@ class ProductList extends Component {
         products: prevState.products
       }
     }, () => {
-      this.updateTotalCost();
+      this.updateSubtotal();
     })
   }
 
@@ -99,16 +105,13 @@ class ProductList extends Component {
         products: prevState.products
       }
     }, () => {
-      this.updateTotalCost();
+      this.updateSubtotal();
     })
   }
 
   onProductListSubmit() {
-    const standardInvoiceData = pick(this.state, ["totalCost", "customer", "shippingCost"]);
+    const standardInvoiceData = pick(this.state, ["subtotal", "customer", "shippingCost", "total"]);
     let selectedProducts = this.state.products.filter((product) => product.quantity > 0)
-
-    // add the shipping cost to the totalCost
-    standardInvoiceData.totalCost += standardInvoiceData.shippingCost
 
     // Get the properties needed to create an invoice
     // Calculate the individual product amount at this time as it not needed to be stored before this time
@@ -147,12 +150,16 @@ class ProductList extends Component {
             { this.renderProducts() }
           </div>
           <div class="total-cost-container">
-            <button className="total-cost">Total: ${this.state.totalCost}</button>
+            <button className="total-cost">Subtotal: ${this.state.subtotal}</button>
             {
-              this.state.totalCost > 0 ? (
-                <button className="submit-products" onClick={() => {this.onProductListSubmit()}}>
-                  Submit
-                </button>
+              this.state.subtotal > 0 ? (
+                <div>
+                  <button className="total-cost">Shipping: ${this.state.shippingCost}</button>
+                  <button className="total-cost">Total: ${this.state.total}</button>
+                  <button className="submit-products" onClick={() => {this.onProductListSubmit()}}>
+                    Submit
+                  </button>
+                </div>
               ) : null
             }
           </div>
