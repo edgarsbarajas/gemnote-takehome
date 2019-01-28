@@ -12,6 +12,7 @@ class ProductList extends Component {
     this.state = {
       products: [],
       customer: "",
+      shippingCost: 14.99, // fixed shipping amount - stored in state to display/submit invoice easier
       totalCost: 0.00,
       loading: false,
       submittedSuccessfully: false
@@ -27,7 +28,8 @@ class ProductList extends Component {
       })
 
       // sum of all prices
-      totalCost = prices.reduce((a, b) => a + b).toFixed(2);
+      totalCost = prices.reduce((a, b) => a + b);
+      totalCost += this.state.shippingCost;
     }
 
     this.setState({totalCost});
@@ -103,7 +105,26 @@ class ProductList extends Component {
   }
 
   onProductListSubmit() {
-    console.log("submit to beeceptor");
+    const standardInvoiceData = pick(this.state, ["totalCost", "customer", "shippingCost"]);
+    let selectedProducts = this.state.products.filter((product) => product.quantity > 0)
+
+    // Get the properties needed to create an invoice
+    // Calculate the individual product amount at this time as it not needed to be stored before this time
+    selectedProducts = selectedProducts.map((product) => {
+      return {...pick(product, ["id", "title", "cost", "size", "color", "quantity"]), amount: product.cost * product.quantity}
+    })
+
+    const invoice = {...standardInvoiceData, products: selectedProducts}
+
+    axios.post("https://gemnote.free.beeceptor.com/orders/create", invoice)
+      .then((response) => {
+        if(response.data.status === "Awesome!") {
+          this.setState({submittedSuccessfully: true});
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   render() {
@@ -115,6 +136,11 @@ class ProductList extends Component {
         <div className="product-list">
           <h1>Products</h1>
           <div className="customer-name">for {this.state.customer}</div>
+          { submittedSuccessfully ? (
+            <div class="success">
+              Successfully submitted invoice!
+            </div>
+          ) : null }
           <div className="products-container">
             { this.renderProducts() }
           </div>
