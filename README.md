@@ -1,24 +1,12 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+To start client and server concurrently: 
+* Create dev database
+* Migrate
+* Seed
 
-Things you may want to cover:
+* Install NPM packages in /client
 
-* Ruby version
+* cd ../ (back to main project folder)
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+:> foreman start -f Procfile.dev
