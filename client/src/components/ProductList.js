@@ -29,7 +29,6 @@ class ProductList extends Component {
 
       // sum of all prices
       totalCost = prices.reduce((a, b) => a + b);
-      totalCost += this.state.shippingCost;
     }
 
     this.setState({totalCost});
@@ -107,6 +106,9 @@ class ProductList extends Component {
   onProductListSubmit() {
     const standardInvoiceData = pick(this.state, ["totalCost", "customer", "shippingCost"]);
     let selectedProducts = this.state.products.filter((product) => product.quantity > 0)
+
+    // add the shipping cost to the totalCost
+    standardInvoiceData.totalCost += standardInvoiceData.shippingCost
 
     // Get the properties needed to create an invoice
     // Calculate the individual product amount at this time as it not needed to be stored before this time
